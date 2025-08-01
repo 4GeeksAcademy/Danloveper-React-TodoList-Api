@@ -9,3 +9,20 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+
+.title {
+    text-align: center;
+    color: #cb5f9e5e
+}
+
+.todo-list {
+    box-shadow: 10px 10px 50px 1px rgb(114, 114, 114);
+}
+
+svg{
+    visibility: hidden;
+}
+
+li:hover svg{
+    visibility: visible;
+}

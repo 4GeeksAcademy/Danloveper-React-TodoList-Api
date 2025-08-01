@@ -14,11 +14,12 @@ function TodoList() {
   }
 
   return (
-    <div className="d-flex justify-content-center">
-      <ul className="list-group list-group-flush">
+    <div className="d-block">
+      <h1 className="mx-auto title">Todos</h1>
+      <ul className="list-group list-group-flush border mx-auto todo-list" style={{width:'40%'}}>
         <li className="list-group-item">
           <input
-            className="border-0"
+            className="border-0 w-100"
             type="text"
             onKeyDown={(e) =>
               e.key === "Enter" && setItems([...items, e.target.value])
