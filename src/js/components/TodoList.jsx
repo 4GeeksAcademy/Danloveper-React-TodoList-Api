@@ -1,17 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 
 function TodoList() {
-  const [items, setItems] = useState(["Make to bed", "Wash my hands"]);
+  const [items, setItems] = useState([]);
+  const baseUrl = 'https://playground.4geeks.com/todo'
 
-  function handleDelete(index) {
-    const fil = index;
-    const itemsFilter = items.filter((element, index)=>{
-        return index != fil
-    });
-    setItems(itemsFilter)
+  const getTodos = async ()=> {
+    const response = await fetch(`${baseUrl}/users/danloveper`);
+    if (!response.ok){
+      error => console.log(error)
+    }
+    const todos = await response.json();
+    setItems(todos.todos);
   }
+
+  const posTodo = async (value)=>{
+    const todo = {
+      'label': value,
+      'is_done': false
+    }
+    const response = await fetch(`${baseUrl}/todos/danloveper`,
+      {
+        method: 'POST',
+        body: JSON.stringify(todo),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (!response.ok) throw console.error(response);
+    const newTodo = await response.json();
+    setItems([...items,newTodo])
+    return newTodo
+  }
+
+  const deletePost = async (postId)=> {
+    const reponse = await fetch(`${baseUrl}/todos/${postId}`,{
+      method:'DELETE'
+    })
+    getTodos();
+    return reponse
+  }
+
+  useEffect(()=>{
+    getTodos();
+  }, []);
 
   return (
     <div className="d-block">
@@ -22,21 +56,21 @@ function TodoList() {
             className="border-0 w-100"
             type="text"
             onKeyDown={(e) =>
-              e.key === "Enter" && setItems([...items, e.target.value])
+              e.key === "Enter" && posTodo(e.target.value)
             }
           />
         </li>
-        {items.map((value, index) => {
+        {items.map((post) => {
           return (
             <li
-              key={index}
+              key={post.id}
               className="list-group-item d-flex justify-content-between"
             >
-              {value}{" "}
+              {post.label}{" "}
               {
                 <FontAwesomeIcon
                   onClick={() => {
-                    handleDelete(index);
+                    deletePost(post.id);
                   }}
                   style={{ color: "red" }}
                   icon={faX}
@@ -45,7 +79,7 @@ function TodoList() {
             </li>
           );
         })}
-        <a href="#" class="list-group-item list-group-item-light">{items.length} item left</a>
+        <a href="#" className="list-group-item list-group-item-light">{items.length} item left</a>
       </ul>
     </div>
   );
